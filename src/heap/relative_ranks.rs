@@ -1,6 +1,3 @@
-use std::env::args;
-use std::fs::read;
-
 #[test]
 fn runner() {
     let result = Solution::find_relative_ranks(vec![5, 4, 3, 2, 1]);
@@ -21,19 +18,20 @@ impl Solution {
             heap.add(Player::new(i, *value));
         }
 
-        let mut result = Vec::with_capacity(score.len());
+        let mut result: Vec<Option<String>> = vec![None; score.len()];
         let mut counter = 0;
         loop {
-            let option = heap.getMax();
+            let option = heap.get_max();
             if option.is_none() {
                 break;
             }
 
             let player = option.unwrap();
             counter += 1;
-            result[player.index] = Self::convert(counter);
+            result[player.index] = Some(Self::convert(counter));
         }
-        result
+
+        result.into_iter().map(|x| x.unwrap()).collect()
     }
 
     fn convert(counter: i32) -> String {
@@ -47,9 +45,7 @@ impl Solution {
             return String::from(Self::BRONZE);
         }
 
-        let mut str =  counter.to_string();
-        str.push_str("th");
-        str
+        counter.to_string()
     }
 }
 
@@ -73,7 +69,7 @@ impl Heap {
 
         let mut index = self.size;
         loop {
-            if index == 0 {
+            if index < 2 {
                 break;
             }
 
@@ -88,13 +84,15 @@ impl Heap {
         }
     }
 
-    fn getMax(&mut self) -> Option<Player> {
+    fn get_max(&mut self) -> Option<Player> {
         if self.size == 0 {
             return None;
         }
 
         let max: Player = self.arr[1].take().unwrap();
+        self.arr[1] = self.arr[self.size].take();
         self.size -= 1;
+
         let mut index = 1;
         loop {
             if index > self.size {
