@@ -5,3 +5,4 @@ mod concat_arrays;
 mod shuffle_array;
 mod max_consecutive_ones;
 mod numbers_smaller_than_current;
+mod find_all_disapperared_nums_in_array;
